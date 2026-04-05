@@ -9,6 +9,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="U.N.I. Game">
+
+    <link rel="manifest" href="manifest.json">
+
     <title>U.N.I.</title>
     <style>
         body { margin: 0; background-color: #111; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: 'Courier New', Courier, monospace; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
@@ -93,6 +96,24 @@
             joystickKnob.style.transition = "transform 0.1s ease-out"; 
             joystickKnob.style.transform = `translate(0px, 0px)`;
             joyVector.x = 0; joyVector.y = 0;
+        }
+
+        function iniciarJuegoYForzarHorizontal() {
+            let elemento = document.documentElement; // Todo el documento HTML
+
+            // 1. Pedir pantalla completa
+            if (elemento.requestFullscreen) {
+                elemento.requestFullscreen().then(() => {
+                    // 2. Una vez en pantalla completa, forzar a horizontal
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock("landscape").catch(function(error) {
+                            console.log("El bloqueo de orientación no es compatible en este dispositivo:", error);
+                        });
+                    }
+                }).catch(err => {
+                    console.log(`Error al intentar iniciar pantalla completa: ${err.message}`);
+                });
+            }
         }
 
 
