@@ -243,6 +243,10 @@
             timerFade = 0;
             textoOverworld = "¿Quieres volver a luchar contra mí?";
             animacionTurno = null;
+            
+            // Aquí detenemos la música pacíficamente al volver al mapa
+            musicaBatalla.pause();
+            musicaBatalla.currentTime = 0;
         }
 
         // --- AVANCE DE DIÁLOGOS Y ESTADOS ---
@@ -601,7 +605,10 @@
                                         if (rectPersonaje.left < rRight && rectPersonaje.right > rLeft && rectPersonaje.top < rBottom && rectPersonaje.bottom > rTop) {
                                             obs.hit = true;
                                             let isDodging = Math.abs(objTarget.offsetX) > 20 || objTarget.offsetY < -10 || objTarget.scaleY < 0.8;
-                                            let dmg = isDodging ? 25 : 50; 
+                                            
+                                            // DAÑO DEL BOSS AUMENTADO PARA PROBAR RÁPIDO
+                                            let dmg = isDodging ? 500 : 1000; 
+                                            
                                             aplicarDanoHeroe(objTarget, dmg);
                                         }
                                     }
@@ -791,11 +798,10 @@
             const dName = document.getElementById("dialogName");
             const dText = document.getElementById("dialogText");
 
+            // QUITÉ EL CÓDIGO DE AUDIO DE AQUÍ PARA QUE NO CORTE LA MÚSICA DE GOLPE
             if (estadoJuego === "GAME_OVER" || estadoJuego === "MUNDO" || estadoJuego === "CONGELADO" || estadoJuego === "FADE_OUT") {
                 dBox.style.visibility = "hidden";
                 return;
-                musicaBatalla.pause();           // <-- AGREGAS ESTO
-                musicaBatalla.currentTime = 0;   // <-- Y ESTO TAMBIÉN
             }
 
             if (estadoJuego === "COMBATE_INTRO") {
@@ -804,8 +810,8 @@
             else if (estadoJuego === "VICTORIA") {
                 dBox.style.visibility = "visible"; dName.innerText = "C4C-T4C"; dText.innerText = mensajeTurno;
                 document.getElementById("dialogIcon").style.display = esperandoClic ? "block" : "none";
-                musicaBatalla.pause();           // <-- AGREGAS ESTO
-                musicaBatalla.currentTime = 0;   // <-- Y ESTO TAMBIÉN
+                musicaBatalla.pause();           // AQUÍ SÍ SE QUEDA PORQUE GANASTE
+                musicaBatalla.currentTime = 0;   
             }
             else if (mensajeTurno !== "") {
                 dBox.style.visibility = "visible";
