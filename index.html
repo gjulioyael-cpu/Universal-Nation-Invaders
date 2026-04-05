@@ -11,25 +11,72 @@
     <meta name="apple-mobile-web-app-title" content="U.N.I. Game">
 
     <link rel="icon" type="image/png" href="icono.png">
-
     <link rel="apple-touch-icon" href="icono.png">
-
     <link rel="manifest" href="manifest.json">
 
     <title>U.N.I.</title>
     <style>
-        body { margin: 0; background-color: #111; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: 'Courier New', Courier, monospace; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
-        #gameWrapper { display: flex; flex-direction: column; align-items: center; position: relative; }
-        canvas { background-color: #000; border: 4px solid #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); display: block; touch-action: none; }
+        body { 
+            margin: 0; 
+            background-color: #111; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            width: 100vw;
+            font-family: 'Courier New', Courier, monospace; 
+            overflow: hidden; 
+            touch-action: none; 
+            user-select: none; 
+            -webkit-user-select: none; 
+        }
         
-        #dialogBox { width: 708px; height: 120px; background-color: rgba(0, 0, 0, 0.95); border: 4px solid #fff; margin-top: 10px; box-sizing: border-box; padding: 15px 20px; position: relative; visibility: hidden; }
+        #gameWrapper { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            width: 100%; 
+            height: 100%;
+            position: relative; 
+        }
+
+        canvas { 
+            background-color: #000; 
+            border: 4px solid #fff; 
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); 
+            display: block; 
+            touch-action: none; 
+            
+            /* --- LA CLAVE PARA QUE NO SE COMA LA PANTALLA --- */
+            max-width: 100%;
+            max-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain; /* Encoge el juego preservando proporciones */
+        }
+        
+        #dialogBox { 
+            width: 90%; 
+            max-width: 708px; 
+            height: 120px; 
+            background-color: rgba(0, 0, 0, 0.95); 
+            border: 4px solid #fff; 
+            box-sizing: border-box; 
+            padding: 15px 20px; 
+            position: absolute; 
+            bottom: 20px; /* Despegado del borde inferior */
+            visibility: hidden; 
+            z-index: 2000;
+        }
         #dialogBox::after { content: ""; position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; border: 1px solid #fff; pointer-events: none; }
         #dialogName { color: #ffcc00; font-weight: bold; font-size: 18px; margin-bottom: 8px; }
         #dialogText { color: white; font-size: 16px; white-space: pre-wrap; }
         #dialogIcon { color: white; font-size: 20px; position: absolute; bottom: 15px; right: 25px; animation: blink 1s infinite; }
         @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
-        /* --- ESTILOS DEL JOYSTICK --- */
         #joystickZone {
             position: absolute; bottom: 150px; left: 20px; width: 120px; height: 120px;
             background-color: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.3);
@@ -43,8 +90,9 @@
         }
         
         @media (max-width: 768px) {
-            canvas { width: 100vw; height: calc(100vw * 0.64); border-width: 2px; }
-            #dialogBox { width: 100vw; border-width: 2px; margin-top: 5px; }
+            /* Se quitaron los forzados de tamaño para dejar trabajar al object-fit */
+            canvas { border-width: 2px; }
+            #dialogBox { width: 95%; border-width: 2px; bottom: 10px; }
             #joystickZone { bottom: 140px; left: 10px; width: 100px; height: 100px; }
             #joystickKnob { top: 25px; left: 25px; }
         }
@@ -54,6 +102,7 @@
 
     <div id="gameWrapper">
         <canvas id="gameCanvas" width="700" height="450"></canvas>
+        
         <div id="dialogBox">
             <div id="dialogName">NOMBRE</div>
             <div id="dialogText">Texto...</div>
@@ -63,7 +112,14 @@
         <div id="joystickZone"><div id="joystickKnob"></div></div>
     </div>
 
+
     <script>
+
+        // --- SISTEMA DE AUDIO ---
+        const musicaBatalla = new Audio("rodeo-de-c4c.mp3"); // Asegúrate de poner el nombre exacto de tu archivo
+        musicaBatalla.loop = true; // Esto hace que se repita infinitamente
+        musicaBatalla.volume = 1.0; // Opcional: Ajusta el volumen (de 0.0 a 1.0) para que no aturda
+
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
@@ -202,6 +258,7 @@
             
             if (estadoJuego === "COMBATE_INTRO") {
                 iniciarFaseSeleccion();
+                
             } else if (estadoJuego === "VICTORIA") {
                 // Inicia el Fade a Negro
                 estadoJuego = "FADE_OUT";
@@ -279,6 +336,8 @@
         function iniciarFaseSeleccion() {
             estadoJuego = "COMBATE_SELECCION"; ordenTurnos = []; heroesPendientes = ["MEPHIS", "SARAH"]; 
             bossAccionesPendientes = 2; timerBoss = MAX_TIMER_BOSS_FAST; impactosBoss = []; 
+            // Agrega esta línea justo en el momento en que empieza la batalla
+            
         }
 
         function registrarAccionJugador(accion) {
@@ -370,6 +429,8 @@
         function iniciarMinijuego(tipo) {
             estadoJuego = tipo; timerAtaqueFase = 60 * 5; danoAcumulado = 0; cooldownGolpe = 0; enemigoGolpeado = false; 
             trazoAtaque = []; efectosGolpe = []; textosFlotantes = [];
+            //AQUI VA LA MUSICA 
+           
         }
 
         function crearObstaculo(tipo, targetVisual) {
@@ -425,6 +486,7 @@
                 playerCombate.x = playerCombate.startX + (easeOut * (playerCombate.targetX - playerCombate.startX));
                 player2Combate.x = player2Combate.startX + (easeOut * (player2Combate.targetX - player2Combate.startX));
                 enemyCombate.x = enemyCombate.startX + (easeOut * (enemyCombate.targetX - enemyCombate.startX));
+                 musicaBatalla.play().catch(e => console.log(e)); // <-- AGREGAS ESTO AQUÍ
             }
             else if (estadoJuego === "FADE_OUT") {
                 timerFade--;
@@ -732,6 +794,8 @@
             if (estadoJuego === "GAME_OVER" || estadoJuego === "MUNDO" || estadoJuego === "CONGELADO" || estadoJuego === "FADE_OUT") {
                 dBox.style.visibility = "hidden";
                 return;
+                musicaBatalla.pause();           // <-- AGREGAS ESTO
+                musicaBatalla.currentTime = 0;   // <-- Y ESTO TAMBIÉN
             }
 
             if (estadoJuego === "COMBATE_INTRO") {
@@ -740,6 +804,8 @@
             else if (estadoJuego === "VICTORIA") {
                 dBox.style.visibility = "visible"; dName.innerText = "C4C-T4C"; dText.innerText = mensajeTurno;
                 document.getElementById("dialogIcon").style.display = esperandoClic ? "block" : "none";
+                musicaBatalla.pause();           // <-- AGREGAS ESTO
+                musicaBatalla.currentTime = 0;   // <-- Y ESTO TAMBIÉN
             }
             else if (mensajeTurno !== "") {
                 dBox.style.visibility = "visible";
