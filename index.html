@@ -5,40 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#000000">
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="U.N.I. Game">
+
     <link rel="icon" type="image/png" href="icono.png">
     <link rel="apple-touch-icon" href="icono.png">
     <link rel="manifest" href="manifest.json">
+
     <title>U.N.I.</title>
     <style>
         body { 
-            margin: 0; background-color: #111; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: 'Courier New', Courier, monospace; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; 
+            margin: 0; 
+            background-color: #111; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            width: 100vw;
+            font-family: 'Courier New', Courier, monospace; 
+            overflow: hidden; 
+            touch-action: none; 
+            user-select: none; 
+            -webkit-user-select: none; 
         }
+        
         #gameWrapper { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            width: 100%; 
+            height: 100%;
+            position: relative; 
         }
+
         canvas { 
-            background-color: #000; border: 4px solid #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); display: block; touch-action: none; 
-            max-width: 100%; max-height: 100%; width: 100vw; height: 100vh; object-fit: contain; 
+            background-color: #000; 
+            border: 4px solid #fff; 
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); 
+            display: block; 
+            touch-action: none; 
+            
+            /* --- LA CLAVE PARA QUE NO SE COMA LA PANTALLA --- */
+            max-width: 100%;
+            max-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain; /* Encoge el juego preservando proporciones */
         }
+        
         #dialogBox { 
-            width: 90%; max-width: 708px; height: 120px; background-color: rgba(0, 0, 0, 0.95); border: 4px solid #fff; box-sizing: border-box; padding: 15px 20px; position: absolute; bottom: 20px; visibility: hidden; z-index: 2000;
+            width: 90%; 
+            max-width: 708px; 
+            height: 120px; 
+            background-color: rgba(0, 0, 0, 0.95); 
+            border: 4px solid #fff; 
+            box-sizing: border-box; 
+            padding: 15px 20px; 
+            position: absolute; 
+            bottom: 20px; /* Despegado del borde inferior */
+            visibility: hidden; 
+            z-index: 2000;
         }
         #dialogBox::after { content: ""; position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; border: 1px solid #fff; pointer-events: none; }
         #dialogName { color: #ffcc00; font-weight: bold; font-size: 18px; margin-bottom: 8px; }
         #dialogText { color: white; font-size: 16px; white-space: pre-wrap; }
         #dialogIcon { color: white; font-size: 20px; position: absolute; bottom: 15px; right: 25px; animation: blink 1s infinite; }
         @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
         #joystickZone {
-            position: absolute; bottom: 150px; left: 20px; width: 120px; height: 120px; background-color: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; z-index: 1000; display: none; touch-action: none;
+            position: absolute; bottom: 150px; left: 20px; width: 120px; height: 120px;
+            background-color: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%; z-index: 1000; display: none; touch-action: none;
         }
         #joystickKnob {
-            position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background-color: rgba(0, 255, 255, 0.6); border-radius: 50%; pointer-events: none; box-shadow: 0 0 15px rgba(0, 255, 255, 0.4); transition: transform 0.05s ease-out; 
+            position: absolute; top: 35px; left: 35px; width: 50px; height: 50px;
+            background-color: rgba(0, 255, 255, 0.6); border-radius: 50%;
+            pointer-events: none; box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+            transition: transform 0.05s ease-out; 
         }
+        
         @media (max-width: 768px) {
-            canvas { border-width: 2px; } #dialogBox { width: 95%; border-width: 2px; bottom: 10px; } #joystickZone { bottom: 140px; left: 10px; width: 100px; height: 100px; } #joystickKnob { top: 25px; left: 25px; }
+            /* Se quitaron los forzados de tamaño para dejar trabajar al object-fit */
+            canvas { border-width: 2px; }
+            #dialogBox { width: 95%; border-width: 2px; bottom: 10px; }
+            #joystickZone { bottom: 140px; left: 10px; width: 100px; height: 100px; }
+            #joystickKnob { top: 25px; left: 25px; }
         }
     </style>
 </head>
@@ -46,85 +102,23 @@
 
     <div id="gameWrapper">
         <canvas id="gameCanvas" width="700" height="450"></canvas>
+        
         <div id="dialogBox">
             <div id="dialogName">NOMBRE</div>
             <div id="dialogText">Texto...</div>
             <div id="dialogIcon">▼</div>
         </div>
+        
         <div id="joystickZone"><div id="joystickKnob"></div></div>
     </div>
 
+
     <script>
-        // ==========================================
-        // 📦 LA CAJITA DE CREACIÓN (BASE DE DATOS)
-        // ==========================================
-        // Copia un bloque, ponle otro nombre, cambia sus stats y ¡PUM! tienes un personaje nuevo.
-
-        const ROSTER_PERSONAJES = {
-            "MEPHIS": { 
-                id: "MEPHIS", 
-                nombre: "Mephis", 
-                hpMax: 600, 
-                colorUI: "#5b3846", 
-                colorSprite: "#ff5252", 
-                sizeX: 25, 
-                sizeY: 55, 
-                velocidad: 10,     // A mayor velocidad, aparta su turno antes
-                tipoAtaque: "CORTE" // Define qué minijuego abre
-            },
-            "SARAH": { 
-                id: "SARAH", 
-                nombre: "Sarah",  
-                hpMax: 1000, 
-                colorUI: "#a3325b", 
-                colorSprite: "#00ffff", 
-                sizeX: 30, 
-                sizeY: 60, 
-                velocidad: 8,
-                tipoAtaque: "GOLPE"
-            }
-        };
-
-        const ROSTER_ENEMIGOS = {
-            "C4C_T4C": { 
-                id: "C4C_T4C", 
-                nombre: "C4C-T4C", 
-                hpMax: 5000, 
-                colorSprite: "#ff0000", 
-                tipo: "ESPECIAL",  // Activa la barra grande y sus diálogos
-                sizeX: 40, 
-                sizeY: 80, 
-                velocidad: 12,     // Qué tan rápido mete su moneda en la fila
-                ataquesPorTurno: 2 // Cuántas veces ataca seguidas
-            },
-            "ALIEN_GRIS": { 
-                id: "ALIEN_GRIS", 
-                nombre: "Alien Gris", 
-                hpMax: 300, 
-                colorSprite: "#00ff00", 
-                tipo: "NORMAL", 
-                sizeX: 30, 
-                sizeY: 50, 
-                velocidad: 5,
-                ataquesPorTurno: 1
-            }
-        };
-
-        // ==========================================
-        // ⚔️ GESTOR DE COMBATE DINÁMICO
-        // ==========================================
-        let equipoPlayer = [];
-        let equipoEnemigo = [];
-        let combateActivo = {
-            tipo: "MUNDO", // MUNDO, NORMAL, ESPECIAL
-            heroeEnTurno: null
-        };
-        let ordenTurnos = []; // La Fila de Arcade Dinámica
 
         // --- SISTEMA DE AUDIO ---
-        const musicaBatalla = new Audio("rodeo-de-c4c.mp3");
-        musicaBatalla.loop = true;
-        musicaBatalla.volume = 1.0;
+        const musicaBatalla = new Audio("rodeo-de-c4c.mp3"); // Asegúrate de poner el nombre exacto de tu archivo
+        musicaBatalla.loop = true; // Esto hace que se repita infinitamente
+        musicaBatalla.volume = 1.0; // Opcional: Ajusta el volumen (de 0.0 a 1.0) para que no aturda
 
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
@@ -149,11 +143,14 @@
             let cx = rect.left + radioBase; let cy = rect.top + radioBase;
             let dx = toque.clientX - cx; let dy = toque.clientY - cy;
             let distancia = Math.hypot(dx, dy); let radioKnob = 25; let limiteArraste = radioBase - radioKnob; 
+
             if (distancia > limiteArraste) { dx = (dx / distancia) * limiteArraste; dy = (dy / distancia) * limiteArraste; }
+
             joystickKnob.style.transition = "none"; 
             joystickKnob.style.transform = `translate(${dx}px, ${dy}px)`;
             joyVector.x = dx / limiteArraste; joyVector.y = dy / limiteArraste;
         }
+
         function soltarJoystick(e) {
             e.preventDefault();
             joystickKnob.style.transition = "transform 0.1s ease-out"; 
@@ -161,15 +158,34 @@
             joyVector.x = 0; joyVector.y = 0;
         }
 
+        function iniciarJuegoYForzarHorizontal() {
+            let elemento = document.documentElement; // Todo el documento HTML
+
+            // 1. Pedir pantalla completa
+            if (elemento.requestFullscreen) {
+                elemento.requestFullscreen().then(() => {
+                    // 2. Una vez en pantalla completa, forzar a horizontal
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock("landscape").catch(function(error) {
+                            console.log("El bloqueo de orientación no es compatible en este dispositivo:", error);
+                        });
+                    }
+                }).catch(err => {
+                    console.log(`Error al intentar iniciar pantalla completa: ${err.message}`);
+                });
+            }
+        }
+
+
         // --- ESTADOS Y GLOBALES ---
         let estadoJuego = "MUNDO"; 
         let tiempoAnimacion = 0;
         let timerShock = 0; 
         let currentFrameDeslizamiento = 0;
         const totalFramesDeslizamiento = 60; 
-        let timerFade = 0;
+        let timerFade = 0; // Temporizador para el fade a negro
 
-        // --- CÁMARA ---
+        // --- SISTEMA DE CÁMARA ---
         let camara = { x: 0, y: 0, zoom: 1, amplitud: 4, frecuenciaX: 0.05, frecuenciaY: 0.07, tiempo: 0 };
         let targetLookX = 350, targetLookY = 225, targetZoom = 1.0;
         let lookX = 350, lookY = 225;
@@ -178,11 +194,22 @@
         const pisoCombateY = 360; 
         const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, Enter: false };
 
+        // --- STATS CON FÍSICAS FLUIDAS ---
+        let boss = { hp: 5000, maxHp: 5000, color: "#ff0000" };
+        let mephis = { nombre: "Mephis", hp: 600, maxHp: 600, accion: "NADA", color: "#5b3846", estado: "VIVO", turnosCaido: 0, shake: 0, flash: 0, offsetX: 0, offsetY: 0, scaleY: 1, targetOffsetX: 0, targetScaleY: 1, velY: 0 };
+        let sarah = { nombre: "Sarah", hp: 1000, maxHp: 1000, accion: "NADA", color: "#a3325b", estado: "VIVO", turnosCaido: 0, shake: 0, flash: 0, offsetX: 0, offsetY: 0, scaleY: 1, targetOffsetX: 0, targetScaleY: 1, velY: 0 };
+
+        let ordenTurnos = []; 
         let turnoActualIndex = 0;
         let heroesPendientes = [];
+        let bossAccionesPendientes = 0;
+        let timerBoss = 0;
+        const MAX_TIMER_BOSS_FAST = 6; const MAX_TIMER_BOSS_NORMAL = 90; 
         let impactosBoss = []; 
+        
         let textoIntro = "¡JAJAJAJ en serio ustedes humanos creen que\nme ganarán en un duelo? ES MI ESPECIALIDAD,\n¡MUERAN!";
-        let textoOverworld = "¿Quieres volver a luchar contra mí?";
+        let textoOverworld = ""; // Mensaje sobre el enemigo en el MUNDO
+        
         let mensajeTurno = "";
         let animacionTurno = null; 
         let esperandoClic = false; 
@@ -191,109 +218,115 @@
         let isDragging = false;
         let trazoAtaque = []; let efectosGolpe = []; let textosFlotantes = []; 
         let enemigoGolpeado = false; let timerGolpe = 0; let timerAtaqueFase = 0; 
-        let danoAcumulado = 0; let cooldownGolpe = 0; let timerMostrarDano = 0;
+        let danoAcumulado = 0; let cooldownGolpe = 0; 
+        let timerMostrarDano = 0;
+
         let lastSwipeX = 0, lastSwipeY = 0;
 
+        const coloresID = { "C4C-T4C_1": "#ff0000", "C4C-T4C_2": "#ff0000", "MEPHIS": "#5b3846", "SARAH": "#a3325b" };
         const playerMundo = { x: 300, y: 220, size: 25, speed: 4, color: "#00ffff" };
         const enemyMundo = { x: 450, y: 220, size: 25, color: "#ff0000" };
-
-        // --- INICIALIZADOR DE BATALLAS ---
-        function iniciarInstanciasCombate(tipoCombate, idsJugadores, idsEnemigos) {
-            combateActivo.tipo = tipoCombate;
-            
-            // Creamos los personajes leyendo la "Cajita"
-            equipoPlayer = idsJugadores.map(id => {
-                let b = ROSTER_PERSONAJES[id];
-                return { ...b, hp: b.hpMax, estado: "VIVO", accion: "NADA", turnosCaido: 0, shake: 0, flash: 0, offsetX: 0, offsetY: 0, scaleY: 1, targetOffsetX: 0, targetScaleY: 1, velY: 0, x: 0, y: pisoCombateY, startX: 0, targetX: 0 };
-            });
-
-            // Creamos los enemigos
-            equipoEnemigo = idsEnemigos.map(id => {
-                let b = ROSTER_ENEMIGOS[id];
-                return { ...b, hp: b.hpMax, estado: "VIVO", shake: 0, flash: 0, x: 0, y: pisoCombateY, startX: 0, targetX: 0 };
-            });
-
-            // Layout Visual Automático
-            if(equipoPlayer[0]) { equipoPlayer[0].startX = playerMundo.x - 20; equipoPlayer[0].targetX = 140; equipoPlayer[0].y = pisoCombateY - 10; }
-            if(equipoPlayer[1]) { equipoPlayer[1].startX = playerMundo.x; equipoPlayer[1].targetX = 180; equipoPlayer[1].y = pisoCombateY; }
-            if(equipoEnemigo[0]) { equipoEnemigo[0].startX = enemyMundo.x; equipoEnemigo[0].targetX = 480; }
-        }
+        const playerCombate = { x: 0, y: pisoCombateY, targetX: 180, startX: 0, sizeX: 30, sizeY: 60, color: "#00ffff" };
+        const player2Combate = { x: 0, y: pisoCombateY - 10, targetX: 140, startX: 0, sizeX: 25, sizeY: 55, color: "#ff5252" }; 
+        const enemyCombate = { x: 0, y: pisoCombateY, targetX: 480, startX: 0, sizeX: 40, sizeY: 80, color: "#ff0000", shake: 0 };
 
         // --- REINICIO DE PARTIDA ---
         function resetGame() {
-            equipoPlayer = [];
-            equipoEnemigo = [];
-            combateActivo.tipo = "MUNDO";
+            boss.hp = boss.maxHp;
+            mephis.hp = mephis.maxHp; mephis.estado = "VIVO"; mephis.turnosCaido = 0; mephis.shake = 0; mephis.flash = 0; mephis.offsetX = 0; mephis.offsetY = 0; mephis.scaleY = 1; mephis.targetOffsetX = 0; mephis.targetScaleY = 1; mephis.velY = 0;
+            sarah.hp = sarah.maxHp; sarah.estado = "VIVO"; sarah.turnosCaido = 0; sarah.shake = 0; sarah.flash = 0; sarah.offsetX = 0; sarah.offsetY = 0; sarah.scaleY = 1; sarah.targetOffsetX = 0; sarah.targetScaleY = 1; sarah.velY = 0;
             playerMundo.x = 300; playerMundo.y = 220;
             enemyMundo.x = 450; enemyMundo.y = 220;
             impactosBoss = []; trazoAtaque = []; efectosGolpe = []; textosFlotantes = [];
             camara.zoom = 1; lookX = 350; lookY = 225;
-            estadoJuego = "MUNDO"; timerFade = 0; textoOverworld = "¿Quieres volver a luchar contra mí?"; animacionTurno = null; currentFrameDeslizamiento = 0;
-            musicaBatalla.pause(); musicaBatalla.currentTime = 0;
+            estadoJuego = "MUNDO";
+            timerFade = 0;
+            textoOverworld = "¿Quieres volver a luchar contra mí?";
+            animacionTurno = null;
+            
+            // Aquí detenemos la música pacíficamente al volver al mapa
+            musicaBatalla.pause();
+            musicaBatalla.currentTime = 0;
         }
 
-        // --- AVANCE DE DIÁLOGOS ---
+        // --- AVANCE DE DIÁLOGOS Y ESTADOS ---
         function avanzarDialogo(e) {
-            if (estadoJuego === "GAME_OVER") { resetGame(); if(e && e.target !== joystickZone && e.target !== joystickKnob) e.stopPropagation(); return true; }
+            // Clic en Game Over reinicia
+            if (estadoJuego === "GAME_OVER") {
+                resetGame();
+                if(e && e.target !== joystickZone && e.target !== joystickKnob) e.stopPropagation(); return true;
+            }
+
             if (!esperandoClic) return false;
             esperandoClic = false; mensajeTurno = ""; 
             
             if (estadoJuego === "COMBATE_INTRO") {
                 iniciarFaseSeleccion();
+                
             } else if (estadoJuego === "VICTORIA") {
-                estadoJuego = "FADE_OUT"; timerFade = 60;
+                // Inicia el Fade a Negro
+                estadoJuego = "FADE_OUT";
+                timerFade = 60;
             } else if (estadoJuego === "COMBATE_RESOLUCION" && animacionTurno) {
-                if (animacionTurno.paso === "GAME_OVER_MSG") { estadoJuego = "GAME_OVER"; animacionTurno = null; }
-                else if (animacionTurno.paso === "IMPACTO_BOSS") terminarTurno();
-                else if (animacionTurno.paso === "MENSAJE_HEROE" || animacionTurno.paso === "MENSAJE") terminarTurno();
+                if (animacionTurno.paso === "GAME_OVER_MSG") {
+                    estadoJuego = "GAME_OVER"; // Lanza pantalla roja
+                    animacionTurno = null;
+                }
+                else if (animacionTurno.paso === "IMPACTO_BOSS") terminarTurnoBoss();
+                else if (animacionTurno.paso === "MENSAJE_HEROE" || animacionTurno.paso === "MENSAJE") terminarTurnoHeroe();
             }
-            if(e && e.target !== joystickZone && e.target !== joystickKnob) e.stopPropagation(); return true;
+            if(e && e.target !== joystickZone && e.target !== joystickKnob) e.stopPropagation(); 
+            return true;
         }
 
         window.addEventListener("pointerdown", (e) => { if (avanzarDialogo(e)) return; }, true);
 
-        // --- INTERACCIONES DE COMBATE TÁCTIL ---
         canvas.addEventListener("pointerdown", (e) => {
             if(esperandoClic || estadoJuego === "GAME_OVER" || estadoJuego === "FADE_OUT") return; 
+
             lastSwipeX = e.clientX; lastSwipeY = e.clientY; 
+
             const rect = canvas.getBoundingClientRect();
             let sx = (e.clientX - rect.left) * (canvas.width / rect.width);
             let sy = (e.clientY - rect.top) * (canvas.height / rect.height);
             let wx = (sx - camara.x) / camara.zoom; let wy = (sy - camara.y) / camara.zoom;
 
             if (estadoJuego === "COMBATE_SELECCION" && heroesPendientes.length > 0) {
-                let actual = heroesPendientes[0];
+                let actual = heroesPendientes[0] === "MEPHIS" ? mephis : sarah;
                 if (actual.estado === "VIVO") {
                     if (sx > 50 && sx < 300 && sy > canvas.height - 150 && sy < canvas.height - 30) registrarAccionJugador("ESCUDO");
                     else if (sx > canvas.width - 300 && sx < canvas.width - 50 && sy > canvas.height - 150 && sy < canvas.height - 30) registrarAccionJugador("ATAQUE");
                 }
             }
-            else if (estadoJuego === "FASE_ATAQUE") {
-                let enemigo = equipoEnemigo[0]; // Apunta al primer enemigo por ahora
-                if (combateActivo.heroeEnTurno.tipoAtaque === "CORTE") { isDragging = true; agregarPuntoTrazo(wx, wy); } 
-                else if (combateActivo.heroeEnTurno.tipoAtaque === "GOLPE") {
-                    if (wx > enemigo.x - 15 && wx < enemigo.x + enemigo.sizeX + 15 && wy > enemigo.y - enemigo.sizeY - 15 && wy < enemigo.y + 15) {
-                        aplicarDanoEnemigo(enemigo, 25, wx, wy); efectosGolpe.push({x: wx, y: wy, life: 10, maxLife: 10});
-                    }
+            else if (estadoJuego === "ATAQUE_MEPHIS") { isDragging = true; agregarPuntoTrazo(wx, wy); } 
+            else if (estadoJuego === "ATAQUE_SARAH") {
+                if (wx > enemyCombate.x - 15 && wx < enemyCombate.x + enemyCombate.sizeX + 15 && wy > enemyCombate.y - enemyCombate.sizeY - 15 && wy < enemyCombate.y + 15) {
+                    aplicarDanoBoss(25, wx, wy); efectosGolpe.push({x: wx, y: wy, life: 10, maxLife: 10});
                 }
             }
         });
 
         canvas.addEventListener("pointermove", (e) => {
             const rect = canvas.getBoundingClientRect();
-            let sx = (e.clientX - rect.left) * (canvas.width / rect.width); let sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+            let sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+            let sy = (e.clientY - rect.top) * (canvas.height / rect.height);
             let wx = (sx - camara.x) / camara.zoom; let wy = (sy - camara.y) / camara.zoom;
 
-            if(isDragging && estadoJuego === "FASE_ATAQUE" && combateActivo.heroeEnTurno.tipoAtaque === "CORTE") {
-                agregarPuntoTrazo(wx, wy); comprobarCorteAlEnemigo(equipoEnemigo[0], wx, wy);
+            if(isDragging && estadoJuego === "ATAQUE_MEPHIS") {
+                agregarPuntoTrazo(wx, wy); comprobarCorteAlEnemigo(wx, wy);
             }
 
-            if (estadoJuego === "COMBATE_RESOLUCION" && animacionTurno && (animacionTurno.paso === "PRE_ESQUIVE" || animacionTurno.paso === "ATAQUE_ACTIVO_BOSS")) {
+            if (estadoJuego === "COMBATE_RESOLUCION" && animacionTurno && 
+               (animacionTurno.paso === "PRE_ESQUIVE" || animacionTurno.paso === "ATAQUE_ACTIVO_BOSS")) {
                 let dx = e.clientX - lastSwipeX; let dy = e.clientY - lastSwipeY;
                 if (Math.hypot(dx, dy) > 40) { 
                     let tObj = animacionTurno.targetRef;
-                    if (Math.abs(dx) > Math.abs(dy)) { tObj.targetOffsetX = dx > 0 ? 80 : -80; } 
-                    else { if (dy > 0) tObj.targetScaleY = 0.4; else if (tObj.offsetY >= -5) tObj.velY = -14; }
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        tObj.targetOffsetX = dx > 0 ? 80 : -80; 
+                    } else {
+                        if (dy > 0) tObj.targetScaleY = 0.4; 
+                        else if (tObj.offsetY >= -5) tObj.velY = -14; 
+                    }
                     lastSwipeX = e.clientX; lastSwipeY = e.clientY; 
                 }
             }
@@ -303,148 +336,148 @@
         window.addEventListener("keydown", e => { if(keys.hasOwnProperty(e.key)) keys[e.key] = true; if (e.key === "Enter") avanzarDialogo(e); });
         window.addEventListener("keyup", e => { if(keys.hasOwnProperty(e.key)) keys[e.key] = false; });
 
-        // --- LÓGICA DE TURNOS ARCADE (NUEVO MOTOR) ---
+        // --- LÓGICA DE COMBATE ---
         function iniciarFaseSeleccion() {
-            estadoJuego = "COMBATE_SELECCION";
-            heroesPendientes = equipoPlayer.filter(h => h.estado === "VIVO" || h.estado === "CAIDO"); // Los caídos se procesan automático
-            impactosBoss = []; 
+            estadoJuego = "COMBATE_SELECCION"; ordenTurnos = []; heroesPendientes = ["MEPHIS", "SARAH"]; 
+            bossAccionesPendientes = 2; timerBoss = MAX_TIMER_BOSS_FAST; impactosBoss = []; 
+            // Agrega esta línea justo en el momento en que empieza la batalla
+            
         }
 
         function registrarAccionJugador(accion) {
             if (heroesPendientes.length === 0) return; 
-            let heroe = heroesPendientes.shift(); 
-            heroe.accion = accion; 
-            
-            if (heroesPendientes.length === 0) { calcularFilaDeTurnos(); iniciarFaseResolucion(); }
-        }
+            let heroeId = heroesPendientes.shift(); 
+            let heroeObj = heroeId === "MEPHIS" ? mephis : sarah;
+            heroeObj.accion = accion; ordenTurnos.push(heroeId);
 
-        // LA MAGIA: Calculamos la Fila Arcade basados en la Velocidad
-        function calcularFilaDeTurnos() {
-            let fila = [];
-            
-            // Metemos a los héroes en la fila
-            equipoPlayer.forEach(p => {
-                if(p.estado === "VIVO" || p.estado === "CAIDO") {
-                    let prio = p.velocidad;
-                    if(p.accion === "ESCUDO") prio += 100; // Prioridad VIP
-                    fila.push({ tipo: "HEROE", obj: p, prioridad: prio });
+            if (heroesPendientes.length === 0) {
+                while (bossAccionesPendientes > 0) {
+                    ordenTurnos.push("C4C-T4C_" + (3 - bossAccionesPendientes)); bossAccionesPendientes--;
                 }
-            });
-
-            // Metemos a los enemigos
-            equipoEnemigo.forEach(e => {
-                if(e.estado === "VIVO") {
-                    for(let i = 0; i < e.ataquesPorTurno; i++) {
-                        // Si ataca múltiples veces, sus ataques subsecuentes son ligeramente más lentos
-                        fila.push({ tipo: "ENEMIGO", obj: e, prioridad: e.velocidad - (i * 2) }); 
-                    }
-                }
-            });
-
-            // Ordenamos del más rápido al más lento
-            fila.sort((a,b) => b.prioridad - a.prioridad);
-            ordenTurnos = fila; 
+                iniciarFaseResolucion();
+            }
         }
 
         function iniciarFaseResolucion() { estadoJuego = "COMBATE_RESOLUCION"; turnoActualIndex = 0; ejecutarTurno(); }
 
         function ejecutarTurno() {
-            let todosMuertosEnemigos = equipoEnemigo.every(e => e.hp <= 0);
-            if (todosMuertosEnemigos) {
-                estadoJuego = "VICTORIA"; animacionTurno = null; mensajeTurno = "Ugh, ¿en serio?"; esperandoClic = true; return;
+            // REVISIÓN DE VICTORIA (JEFE MUERTO)
+            if (boss.hp <= 0) {
+                estadoJuego = "VICTORIA";
+                animacionTurno = null;
+                mensajeTurno = "Ugh, ¿en serio?";
+                esperandoClic = true;
+                return;
             }
 
             if (turnoActualIndex >= ordenTurnos.length) { iniciarFaseSeleccion(); return; }
-            let turnoData = ordenTurnos[turnoActualIndex]; mensajeTurno = ""; 
+            let turnoDe = ordenTurnos[turnoActualIndex]; mensajeTurno = ""; 
 
-            if (turnoData.tipo === "ENEMIGO") {
-                let eObj = turnoData.obj;
-                if (eObj.hp <= 0) { terminarTurno(); return; } // Si murió antes de su turno, lo salta
-
-                let targetsVivos = equipoPlayer.filter(h => h.estado === "VIVO");
+            if (turnoDe.startsWith("C4C-T4C")) {
+                let targetsVivos = [mephis, sarah].filter(h => h.estado === "VIVO");
+                
+                // REVISIÓN DE GAME OVER (TODOS MUERTOS)
                 if (targetsVivos.length === 0) {
-                    animacionTurno = { paso: "GAME_OVER_MSG", targetVisual: eObj };
+                    animacionTurno = { paso: "GAME_OVER_MSG", targetVisual: enemyCombate };
                     mensajeTurno = "¡EL EQUIPO HA SIDO ANIQUILADO!"; esperandoClic = true;
                 } else {
                     let target = targetsVivos[Math.floor(Math.random() * targetsVivos.length)];
-                    animacionTurno = { paso: "CARGAR_BOSS", timer: 45, targetRef: target, jefeActivo: eObj, obstaculos: [] };
-                    if (eObj.tipo === "ESPECIAL") {
-                        // El Boss pistolero ataca la interfaz
-                        impactosBoss.push({ x: canvas.width - 175 + (Math.random() * 80 - 40), y: canvas.height - 90 + (Math.random() * 40 - 20), rotacion: Math.random() * Math.PI, frameTexto: 30 });
-                    }
+                    animacionTurno = { paso: "CARGAR_BOSS", timer: 45, targetRef: target, obstaculos: [] };
                 }
             } 
-            else if (turnoData.tipo === "HEROE") {
-                let char = turnoData.obj;
+            else if (turnoDe === "MEPHIS" || turnoDe === "SARAH") {
+                let char = turnoDe === "MEPHIS" ? mephis : sarah;
+                let visual = turnoDe === "MEPHIS" ? player2Combate : playerCombate;
+                
                 if (char.estado === "CAIDO") {
                     char.turnosCaido--;
                     if (char.turnosCaido <= 0) {
-                        char.hp = Math.floor(char.hpMax / 2); char.estado = "VIVO"; char.accion = "NADA"; mensajeTurno = `¡${char.nombre} se ha recuperado!`;
+                        char.hp = Math.floor(char.maxHp / 2); char.estado = "VIVO"; char.accion = "NADA"; mensajeTurno = `¡${char.nombre} se ha recuperado!`;
                     } else { mensajeTurno = `${char.nombre} está débil...`; }
-                    animacionTurno = { paso: "MENSAJE_HEROE", targetVisual: char }; esperandoClic = true; 
+                    animacionTurno = { paso: "MENSAJE_HEROE", targetVisual: visual }; esperandoClic = true; 
                 }
                 else if (char.accion === "ESCUDO") { 
-                    mensajeTurno = `${char.nombre} mantiene la guardia firme.`; animacionTurno = { paso: "MENSAJE_HEROE", targetVisual: char }; esperandoClic = true; 
+                    mensajeTurno = `${char.nombre} mantiene la guardia firme.`; animacionTurno = { paso: "MENSAJE_HEROE", targetVisual: visual }; esperandoClic = true; 
                 }
-                else if (char.accion === "ATAQUE") { 
-                    combateActivo.heroeEnTurno = char;
-                    estadoJuego = "FASE_ATAQUE"; timerAtaqueFase = 60 * 5; danoAcumulado = 0; cooldownGolpe = 0; enemigoGolpeado = false; 
-                    trazoAtaque = []; efectosGolpe = []; textosFlotantes = [];
-                    return; 
-                }
+                else if (char.accion === "ATAQUE") { iniciarMinijuego(`ATAQUE_${turnoDe}`); return; }
             }
         }
 
-        function terminarTurno() { animacionTurno = null; turnoActualIndex++; ejecutarTurno(); }
-        
+        function terminarTurnoBoss() { animacionTurno = null; turnoActualIndex++; ejecutarTurno(); }
+        function terminarTurnoHeroe() { animacionTurno = null; turnoActualIndex++; ejecutarTurno(); }
         function agregarPuntoTrazo(wx, wy) { trazoAtaque.push({x: wx, y: wy, life: 15, maxLife: 15}); }
         
-        function aplicarDanoEnemigo(enemigo, dano, x, y) {
+        function aplicarDanoBoss(dano, x, y) {
             enemigoGolpeado = true; timerGolpe = 6; screenShake = 5;
-            danoAcumulado += dano; enemigo.hp -= dano; if (enemigo.hp < 0) enemigo.hp = 0;
+            danoAcumulado += dano; boss.hp -= dano; if (boss.hp < 0) boss.hp = 0;
             textosFlotantes.push({ texto: dano, color: "#ffcc00", x: x + (Math.random() * 40 - 20), y: y + (Math.random() * 40 - 20), velY: -1 - Math.random(), life: 40, maxLife: 40 });
         }
 
         function aplicarDanoHeroe(heroeObj, dano) {
             heroeObj.hp -= dano; heroeObj.shake = 15; heroeObj.flash = 20; screenShake = 15;
-            textosFlotantes.push({ texto: dano, color: "#ff0000", x: heroeObj.x + heroeObj.sizeX/2, y: heroeObj.y + heroeObj.offsetY - heroeObj.sizeY, velY: -2, life: 60, maxLife: 60 });
+            let visual = heroeObj === mephis ? player2Combate : playerCombate;
+            textosFlotantes.push({ texto: dano, color: "#ff0000", x: visual.x + visual.sizeX/2, y: visual.y + heroeObj.offsetY - visual.sizeY, velY: -2, life: 60, maxLife: 60 });
             if (heroeObj.hp <= 0) { heroeObj.hp = 0; heroeObj.estado = "CAIDO"; heroeObj.turnosCaido = 3; heroeObj.accion = "CAIDO"; }
         }
 
-        function comprobarCorteAlEnemigo(enemigo, wx, wy) {
+        function comprobarCorteAlEnemigo(wx, wy) {
             if(cooldownGolpe > 0) return; 
-            if (wx > enemigo.x && wx < enemigo.x + enemigo.sizeX && wy > enemigo.y - enemigo.sizeY && wy < enemigo.y) {
+            if (wx > enemyCombate.x && wx < enemyCombate.x + enemyCombate.sizeX && wy > enemyCombate.y - enemyCombate.sizeY && wy < enemyCombate.y) {
                 if (trazoAtaque.length > 2) {
                     let p1 = trazoAtaque[trazoAtaque.length - 1]; let p2 = trazoAtaque[trazoAtaque.length - 3];
-                    if (Math.hypot(p1.x - p2.x, p1.y - p2.y) > 5) { aplicarDanoEnemigo(enemigo, 15, wx, wy); cooldownGolpe = 12; }
+                    if (Math.hypot(p1.x - p2.x, p1.y - p2.y) > 5) { aplicarDanoBoss(15, wx, wy); cooldownGolpe = 12; }
                 }
             }
+        }
+
+        function iniciarMinijuego(tipo) {
+            estadoJuego = tipo; timerAtaqueFase = 60 * 5; danoAcumulado = 0; cooldownGolpe = 0; enemigoGolpeado = false; 
+            trazoAtaque = []; efectosGolpe = []; textosFlotantes = [];
+            //AQUI VA LA MUSICA 
+           
         }
 
         function crearObstaculo(tipo, targetVisual) {
             let tx = targetVisual.x + targetVisual.sizeX/2; let ty = targetVisual.y;
             let obs = { tipo: tipo, hit: false, life: 0, warning: 30, targetX: tx, targetY: ty }; 
-            if (tipo === "LLUVIA") { obs.x = tx - 12 + (Math.random()*24 - 12); obs.y = ty - 400; obs.width = 25; obs.height = 40; obs.velY = 16; obs.maxLife = 60; } 
-            else if (tipo === "NOPALAZO") { obs.x = equipoEnemigo[0].x; obs.y = ty - 35; obs.width = 30; obs.height = 30; obs.velX = -18; obs.maxLife = 60; } 
-            else if (tipo === "PINCHOS") { obs.x = tx - 35; obs.y = ty + 5; obs.width = 70; obs.height = 0; obs.maxLife = 45; }
+            
+            if (tipo === "LLUVIA") {
+                obs.x = tx - 12 + (Math.random()*24 - 12); 
+                obs.y = ty - 400; obs.width = 25; obs.height = 40; obs.velY = 16; obs.maxLife = 60;
+            } else if (tipo === "NOPALAZO") {
+                obs.x = enemyCombate.x; obs.y = ty - 35; 
+                obs.width = 30; obs.height = 30; obs.velX = -18; obs.maxLife = 60;
+            } else if (tipo === "PINCHOS") {
+                obs.x = tx - 35; obs.y = ty + 5; 
+                obs.width = 70; obs.height = 0; obs.maxLife = 45; 
+            }
             return obs;
         }
 
-        // --- LOOP PRINCIPAL DE UPDATE ---
+        // --- UPDATE LOOP ---
         function update() {
-            if (estadoJuego === "MUNDO" && esDispositivoMovil) joystickZone.style.display = "block";
-            else { joystickZone.style.display = "none"; joyVector.x = 0; joyVector.y = 0; }
+            // CONTROL JOYSTICK VISIBILIDAD
+            if (estadoJuego === "MUNDO" && esDispositivoMovil) {
+                joystickZone.style.display = "block";
+            } else {
+                joystickZone.style.display = "none";
+                joyVector.x = 0; joyVector.y = 0;
+            }
 
             if (estadoJuego === "MUNDO") {
-                playerMundo.x += joyVector.x * playerMundo.speed; playerMundo.y += joyVector.y * playerMundo.speed;
-                if (keys.ArrowUp || keys.w) playerMundo.y -= playerMundo.speed; if (keys.ArrowDown || keys.s) playerMundo.y += playerMundo.speed;
-                if (keys.ArrowLeft || keys.a) playerMundo.x -= playerMundo.speed; if (keys.ArrowRight || keys.d) playerMundo.x += playerMundo.speed;
+                playerMundo.x += joyVector.x * playerMundo.speed;
+                playerMundo.y += joyVector.y * playerMundo.speed;
+
+                if (keys.ArrowUp || keys.w) playerMundo.y -= playerMundo.speed;
+                if (keys.ArrowDown || keys.s) playerMundo.y += playerMundo.speed;
+                if (keys.ArrowLeft || keys.a) playerMundo.x -= playerMundo.speed;
+                if (keys.ArrowRight || keys.d) playerMundo.x += playerMundo.speed;
 
                 if (Math.abs(playerMundo.x - enemyMundo.x) < playerMundo.size && Math.abs(playerMundo.y - enemyMundo.y) < playerMundo.size) {
-                    estadoJuego = "CONGELADO"; timerShock = 60; textoOverworld = ""; 
-                    
-                    // AQUI NACE EL COMBATE
-                    iniciarInstanciasCombate("ESPECIAL", ["MEPHIS", "SARAH"], ["C4C_T4C"]);
+                    estadoJuego = "CONGELADO"; timerShock = 60; textoOverworld = ""; // Quita el texto al tocarlo
+                    playerCombate.startX = playerMundo.x; playerCombate.x = playerCombate.startX;
+                    player2Combate.startX = playerMundo.x - 20; player2Combate.x = player2Combate.startX;
+                    enemyCombate.startX = enemyMundo.x; enemyCombate.x = enemyCombate.startX;
                 }
             } 
             else if (estadoJuego === "CONGELADO") {
@@ -454,26 +487,30 @@
                 currentFrameDeslizamiento++; let t = currentFrameDeslizamiento / totalFramesDeslizamiento; let easeOut = 1 - Math.pow(1 - t, 3); 
                 if (t >= 1) { estadoJuego = "COMBATE_INTRO"; esperandoClic = true; }
                 
-                equipoPlayer.forEach(p => p.x = p.startX + (easeOut * (p.targetX - p.startX)));
-                equipoEnemigo.forEach(e => e.x = e.startX + (easeOut * (e.targetX - e.startX)));
-                musicaBatalla.play().catch(e => console.log(e));
+                playerCombate.x = playerCombate.startX + (easeOut * (playerCombate.targetX - playerCombate.startX));
+                player2Combate.x = player2Combate.startX + (easeOut * (player2Combate.targetX - player2Combate.startX));
+                enemyCombate.x = enemyCombate.startX + (easeOut * (enemyCombate.targetX - enemyCombate.startX));
+                 musicaBatalla.play().catch(e => console.log(e)); // <-- AGREGAS ESTO AQUÍ
             }
             else if (estadoJuego === "FADE_OUT") {
-                timerFade--; if (timerFade <= 0) resetGame();
+                timerFade--;
+                if (timerFade <= 0) resetGame();
             }
             else if (estadoJuego !== "MUNDO" && estadoJuego !== "GAME_OVER") {
                 tiempoAnimacion += 0.15; 
                 
-                equipoPlayer.forEach(p => {
-                    if(p.estado !== "VIVO") return;
-                    if(p.flash > 0) p.flash--; if(p.shake > 0.5) p.shake *= 0.85; else p.shake = 0;
-                    p.offsetX += (p.targetOffsetX - p.offsetX) * 0.25; p.targetOffsetX *= 0.85; p.offsetY += p.velY; 
-                    if (p.offsetY < 0) p.velY += 1.5; else { p.offsetY = 0; p.velY = 0; }
-                    p.scaleY += (p.targetScaleY - p.scaleY) * 0.3; p.targetScaleY += (1 - p.targetScaleY) * 0.15; 
-                });
+                if(mephis.flash > 0) mephis.flash--; if(sarah.flash > 0) sarah.flash--;
+                if(mephis.shake > 0.5) mephis.shake *= 0.85; else mephis.shake = 0;
+                if(sarah.shake > 0.5) sarah.shake *= 0.85; else sarah.shake = 0;
 
-                equipoEnemigo.forEach(e => {
-                    if(e.flash > 0) e.flash--; if(e.shake > 0.5) e.shake *= 0.85; else e.shake = 0;
+                [mephis, sarah].forEach(p => {
+                    if(p.estado !== "VIVO") return;
+                    p.offsetX += (p.targetOffsetX - p.offsetX) * 0.25; 
+                    p.targetOffsetX *= 0.85; 
+                    p.offsetY += p.velY; 
+                    if (p.offsetY < 0) p.velY += 1.5; else { p.offsetY = 0; p.velY = 0; }
+                    p.scaleY += (p.targetScaleY - p.scaleY) * 0.3; 
+                    p.targetScaleY += (1 - p.targetScaleY) * 0.15; 
                 });
 
                 for (let i = textosFlotantes.length - 1; i >= 0; i--) {
@@ -483,84 +520,120 @@
 
                 if (estadoJuego === "COMBATE_SELECCION") {
                     if (heroesPendientes.length > 0) {
-                        let actual = heroesPendientes[0];
+                        let actual = heroesPendientes[0] === "MEPHIS" ? mephis : sarah;
                         if (actual.estado === "CAIDO") registrarAccionJugador("CAIDO");
-                        else { targetLookX = actual.x + actual.sizeX/2; targetLookY = actual.y - actual.sizeY/2; targetZoom = 1.5; }
+                        else {
+                            let visual = actual === mephis ? player2Combate : playerCombate;
+                            targetLookX = visual.x + visual.sizeX/2; targetLookY = visual.y - visual.sizeY/2; targetZoom = 1.5;
+                        }
+                    }
+
+                    if (bossAccionesPendientes > 0) {
+                        timerBoss--;
+                        if (timerBoss <= 0) {
+                            let idx = 2 - bossAccionesPendientes + 1; 
+                            ordenTurnos.push("C4C-T4C_" + idx); bossAccionesPendientes--; timerBoss = MAX_TIMER_BOSS_NORMAL; 
+                            impactosBoss.push({ x: canvas.width - 175 + (Math.random() * 80 - 40), y: canvas.height - 90 + (Math.random() * 40 - 20), rotacion: Math.random() * Math.PI, frameTexto: 30 });
+                        }
                     }
                 }
                 else if (estadoJuego === "COMBATE_RESOLUCION") {
                     if (animacionTurno) {
                         let objTarget = animacionTurno.targetRef;
-                        let jefeAtk = animacionTurno.jefeActivo;
+                        let objVisual = objTarget === mephis ? player2Combate : playerCombate;
 
                         if (animacionTurno.paso === "CARGAR_BOSS") {
                             animacionTurno.timer--;
-                            targetLookX = jefeAtk.x + jefeAtk.sizeX/2; targetLookY = jefeAtk.y - jefeAtk.sizeY/2; targetZoom = 1.4;
-                            jefeAtk.shake = (Math.random() * 10) - 5;
+                            targetLookX = enemyCombate.x + enemyCombate.sizeX/2; targetLookY = enemyCombate.y - enemyCombate.sizeY/2; targetZoom = 1.4;
+                            enemyCombate.shake = (Math.random() * 10) - 5;
 
                             if (animacionTurno.timer <= 0) {
-                                jefeAtk.shake = 0; 
+                                enemyCombate.shake = 0; 
                                 if (objTarget && objTarget.accion === "ESCUDO") {
-                                    animacionTurno.paso = "IMPACTO_BOSS"; mensajeTurno = `¡${objTarget.nombre} aguantó el ataque con su escudo!`; 
+                                    animacionTurno.paso = "IMPACTO_BOSS";
+                                    mensajeTurno = `¡${objTarget.nombre} aguantó la ráfaga con su escudo!`; 
                                     objTarget.shake = 5; esperandoClic = true; 
                                 } else {
-                                    animacionTurno.paso = "PRE_ESQUIVE"; animacionTurno.timer = 60; 
+                                    animacionTurno.paso = "PRE_ESQUIVE";
+                                    animacionTurno.timer = 60; 
                                 }
                             }
                         } 
                         else if (animacionTurno.paso === "PRE_ESQUIVE") {
-                            targetLookX = objTarget.x + objTarget.sizeX/2; targetLookY = objTarget.y - objTarget.sizeY/2; targetZoom = 1.4;
+                            targetLookX = objVisual.x + objVisual.sizeX/2; targetLookY = objVisual.y - objVisual.sizeY/2; targetZoom = 1.4;
                             animacionTurno.timer--;
-                            if (animacionTurno.timer <= 0) { animacionTurno.paso = "ATAQUE_ACTIVO_BOSS"; animacionTurno.timer = 150; }
+                            if (animacionTurno.timer <= 0) {
+                                animacionTurno.paso = "ATAQUE_ACTIVO_BOSS";
+                                animacionTurno.timer = 150; 
+                            }
                         }
                         else if (animacionTurno.paso === "ATAQUE_ACTIVO_BOSS") {
-                            targetLookX = objTarget.x + objTarget.sizeX/2; targetLookY = objTarget.y - objTarget.sizeY/2; targetZoom = 1.3;
+                            targetLookX = objVisual.x + objVisual.sizeX/2; targetLookY = objVisual.y - objVisual.sizeY/2; targetZoom = 1.3;
                             animacionTurno.timer--;
 
                             if (animacionTurno.timer === 150 || animacionTurno.timer === 100 || animacionTurno.timer === 50) {
                                 let tipos = ["LLUVIA", "NOPALAZO", "PINCHOS"];
                                 let tElegido = tipos[Math.floor(Math.random() * tipos.length)];
-                                animacionTurno.obstaculos.push(crearObstaculo(tElegido, objTarget));
-                                jefeAtk.shake = 10;
+                                animacionTurno.obstaculos.push(crearObstaculo(tElegido, objVisual));
+                                enemyCombate.shake = 10;
                             }
 
                             let rectPersonaje = {
-                                left: objTarget.x + objTarget.offsetX, right: objTarget.x + objTarget.offsetX + objTarget.sizeX,
-                                top: objTarget.y + objTarget.offsetY - (objTarget.sizeY * objTarget.scaleY), bottom: objTarget.y + objTarget.offsetY
+                                left: objVisual.x + objTarget.offsetX, right: objVisual.x + objTarget.offsetX + objVisual.sizeX,
+                                top: objVisual.y + objTarget.offsetY - (objVisual.sizeY * objTarget.scaleY), bottom: objVisual.y + objTarget.offsetY
                             };
 
                             for (let i = animacionTurno.obstaculos.length - 1; i >= 0; i--) {
                                 let obs = animacionTurno.obstaculos[i];
+                                
                                 if (obs.warning > 0) obs.warning--;
                                 else {
                                     obs.life++;
-                                    if (obs.tipo === "LLUVIA") obs.y += obs.velY; else if (obs.tipo === "NOPALAZO") obs.x += obs.velX;
-                                    else if (obs.tipo === "PINCHOS") { if(obs.life < 10) obs.height = Math.min(30, obs.height + 6); else if(obs.life > 35) obs.height = Math.max(0, obs.height - 6); }
+                                    if (obs.tipo === "LLUVIA") obs.y += obs.velY;
+                                    else if (obs.tipo === "NOPALAZO") obs.x += obs.velX;
+                                    else if (obs.tipo === "PINCHOS") {
+                                        if(obs.life < 10) obs.height = Math.min(30, obs.height + 6); 
+                                        else if(obs.life > 35) obs.height = Math.max(0, obs.height - 6); 
+                                    }
+
                                     if (obs.life > obs.maxLife) { animacionTurno.obstaculos.splice(i, 1); continue; }
+
                                     if (!obs.hit && obs.height > 0) {
-                                        let rLeft = obs.x; let rRight = obs.x + obs.width; let rTop = obs.y - obs.height; let rBottom = obs.y;
+                                        let rLeft = obs.x; let rRight = obs.x + obs.width;
+                                        let rTop = obs.y - obs.height; let rBottom = obs.y;
+
                                         if (rectPersonaje.left < rRight && rectPersonaje.right > rLeft && rectPersonaje.top < rBottom && rectPersonaje.bottom > rTop) {
                                             obs.hit = true;
                                             let isDodging = Math.abs(objTarget.offsetX) > 20 || objTarget.offsetY < -10 || objTarget.scaleY < 0.8;
-                                            let dmg = isDodging ? 500 : 1000; // Daño del enemigo
+                                            
+                                            // DAÑO DEL BOSS AUMENTADO PARA PROBAR RÁPIDO
+                                            let dmg = isDodging ? 500 : 1000; 
+                                            
                                             aplicarDanoHeroe(objTarget, dmg);
                                         }
                                     }
                                 }
                             }
+
                             if (animacionTurno.timer <= 0) { animacionTurno.paso = "FIN_ESQUIVE"; animacionTurno.timer = 30; }
                         }
                         else if (animacionTurno.paso === "FIN_ESQUIVE") {
-                            animacionTurno.timer--; if (animacionTurno.timer <= 0) terminarTurno();
+                            animacionTurno.timer--;
+                            if (animacionTurno.timer <= 0) terminarTurnoBoss();
+                        }
+                        else if (animacionTurno.paso === "IMPACTO_BOSS" || animacionTurno.paso === "GAME_OVER_MSG") {
+                            // Espera clic
                         }
                         else if (animacionTurno.paso === "MENSAJE_HEROE" || animacionTurno.paso === "MENSAJE") {
-                            targetLookX = animacionTurno.targetVisual.x + animacionTurno.targetVisual.sizeX/2; targetLookY = animacionTurno.targetVisual.y - animacionTurno.targetVisual.sizeY/2; targetZoom = 1.4;
+                            targetLookX = animacionTurno.targetVisual.x + animacionTurno.targetVisual.sizeX/2;
+                            targetLookY = animacionTurno.targetVisual.y - animacionTurno.targetVisual.sizeY/2; targetZoom = 1.4;
                         }
-                    } else { targetLookX = 350; targetLookY = 225; targetZoom = 1.0; }
+                    } else {
+                        targetLookX = 350; targetLookY = 225; targetZoom = 1.0;
+                    }
                 }
-                else if (estadoJuego === "FASE_ATAQUE") {
-                    let eneTarget = equipoEnemigo[0]; // Apuntamos al primero por ahora
-                    targetLookX = eneTarget.x + eneTarget.sizeX/2; targetLookY = eneTarget.y - eneTarget.sizeY/2; targetZoom = 1.3;
+                else if (estadoJuego.startsWith("ATAQUE_")) {
+                    targetLookX = enemyCombate.x + enemyCombate.sizeX/2; targetLookY = enemyCombate.y - enemyCombate.sizeY/2; targetZoom = 1.3;
                     timerAtaqueFase--; if (cooldownGolpe > 0) cooldownGolpe--;
                     for (let i = trazoAtaque.length - 1; i >= 0; i--) { trazoAtaque[i].life--; if (trazoAtaque[i].life <= 0) trazoAtaque.splice(i, 1); }
                     for (let i = efectosGolpe.length - 1; i >= 0; i--) { efectosGolpe[i].life--; if (efectosGolpe[i].life <= 0) efectosGolpe.splice(i, 1); }
@@ -595,66 +668,99 @@
                 ctx.fillStyle = estadoJuego === "MUNDO" ? "#2d4a22" : "black"; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = playerMundo.color; ctx.fillRect(playerMundo.x, playerMundo.y, playerMundo.size, playerMundo.size);
                 ctx.fillStyle = enemyMundo.color; ctx.fillRect(enemyMundo.x, enemyMundo.y, enemyMundo.size, enemyMundo.size);
+                
+                // Texto de revancha
                 if (textoOverworld !== "" && estadoJuego === "MUNDO") {
                     ctx.fillStyle = "white"; ctx.font = "bold 16px Courier"; ctx.textAlign = "center";
-                    ctx.fillText(textoOverworld, enemyMundo.x + enemyMundo.size/2, enemyMundo.y - 15); ctx.textAlign = "left";
+                    ctx.fillText(textoOverworld, enemyMundo.x + enemyMundo.size/2, enemyMundo.y - 15);
+                    ctx.textAlign = "left";
                 }
             } 
             else if (estadoJuego === "GAME_OVER") {
                 ctx.fillStyle = "black"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "red"; ctx.font = "bold 60px Courier"; ctx.textAlign = "center"; ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2 - 20);
-                ctx.fillStyle = "white"; ctx.font = "20px Courier"; ctx.fillText("La pantalla es táctil, ¡toca para reiniciar!", canvas.width/2, canvas.height/2 + 40); ctx.textAlign = "left";
+                ctx.fillStyle = "red"; ctx.font = "bold 60px Courier"; ctx.textAlign = "center";
+                ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2 - 20);
+                ctx.fillStyle = "white"; ctx.font = "20px Courier";
+                ctx.fillText("La pantalla es táctil, ¡toca para reiniciar!", canvas.width/2, canvas.height/2 + 40);
+                ctx.textAlign = "left";
             }
             else {
                 ctx.save(); ctx.translate(camara.x, camara.y); ctx.scale(camara.zoom, camara.zoom);
+                
                 drawEscenaCombateCompleta(); 
 
-                if (estadoJuego === "COMBATE_RESOLUCION" && animacionTurno && (animacionTurno.paso === "PRE_ESQUIVE" || animacionTurno.paso === "ATAQUE_ACTIVO_BOSS" || animacionTurno.paso === "FIN_ESQUIVE")) {
-                    let tVis = animacionTurno.targetRef; let cx = tVis.x + tVis.sizeX/2; let cy = tVis.y - tVis.sizeY/2;
-                    ctx.fillStyle = "rgba(0,0,0,0.75)"; ctx.beginPath(); ctx.rect(-1000, -1000, 3000, 3000); ctx.arc(cx, cy, 80, 0, Math.PI * 2, true); ctx.fill();
+                if (estadoJuego === "COMBATE_RESOLUCION" && animacionTurno && 
+                   (animacionTurno.paso === "PRE_ESQUIVE" || animacionTurno.paso === "ATAQUE_ACTIVO_BOSS" || animacionTurno.paso === "FIN_ESQUIVE")) {
+                    
+                    let tVis = animacionTurno.targetRef === mephis ? player2Combate : playerCombate;
+                    let cx = tVis.x + tVis.sizeX/2;
+                    let cy = tVis.y - tVis.sizeY/2;
+
+                    ctx.fillStyle = "rgba(0,0,0,0.75)"; 
+                    ctx.beginPath();
+                    ctx.rect(-1000, -1000, 3000, 3000); 
+                    ctx.arc(cx, cy, 80, 0, Math.PI * 2, true); 
+                    ctx.fill();
+
                     if (animacionTurno.paso === "PRE_ESQUIVE") {
-                        ctx.fillStyle = "white"; ctx.strokeStyle = "red"; ctx.lineWidth = 3; ctx.font = "bold 30px Courier"; ctx.textAlign = "center";
+                        ctx.fillStyle = "white"; ctx.strokeStyle = "red"; ctx.lineWidth = 3;
+                        ctx.font = "bold 30px Courier"; ctx.textAlign = "center";
                         ctx.strokeText("¡ESQUIVA!", cx, cy - 80); ctx.fillText("¡ESQUIVA!", cx, cy - 80); ctx.textAlign = "left";
                     }
                 }
-                if (estadoJuego === "COMBATE_RESOLUCION" && animacionTurno && (animacionTurno.paso === "ATAQUE_ACTIVO_BOSS" || animacionTurno.paso === "FIN_ESQUIVE")) drawObstaculosHitbox();
-                if (estadoJuego === "FASE_ATAQUE" && trazoAtaque.length > 1) {
+
+                if (estadoJuego === "COMBATE_RESOLUCION" && animacionTurno && 
+                   (animacionTurno.paso === "ATAQUE_ACTIVO_BOSS" || animacionTurno.paso === "FIN_ESQUIVE")) {
+                    drawObstaculosHitbox();
+                }
+
+                if (estadoJuego === "ATAQUE_MEPHIS" && trazoAtaque.length > 1) {
                     for (let i = 1; i < trazoAtaque.length; i++) {
                         ctx.beginPath(); ctx.moveTo(trazoAtaque[i-1].x, trazoAtaque[i-1].y); ctx.lineTo(trazoAtaque[i].x, trazoAtaque[i].y);
-                        let l = trazoAtaque[i].life / trazoAtaque[i].maxLife; ctx.strokeStyle = `rgba(255, 0, 85, ${l})`; ctx.lineWidth = (1 + (l * 8)) / camara.zoom; ctx.lineCap = "round"; ctx.stroke();
+                        let l = trazoAtaque[i].life / trazoAtaque[i].maxLife; 
+                        ctx.strokeStyle = `rgba(255, 0, 85, ${l})`; ctx.lineWidth = (1 + (l * 8)) / camara.zoom; ctx.lineCap = "round"; ctx.stroke();
                     }
                 }
+                
                 for (let tf of textosFlotantes) {
-                    let alfa = tf.life / tf.maxLife; ctx.fillStyle = tf.color; ctx.strokeStyle = `rgba(0, 0, 0, ${alfa})`; ctx.lineWidth = 3;
-                    ctx.font = `bold ${15 + alfa * 10}px Courier`; ctx.globalAlpha = alfa; ctx.strokeText(tf.texto, tf.x, tf.y); ctx.fillText(tf.texto, tf.x, tf.y); ctx.globalAlpha = 1.0;
+                    let alfa = tf.life / tf.maxLife; ctx.fillStyle = tf.color; 
+                    ctx.strokeStyle = `rgba(0, 0, 0, ${alfa})`; ctx.lineWidth = 3;
+                    ctx.font = `bold ${15 + alfa * 10}px Courier`; ctx.globalAlpha = alfa; 
+                    ctx.strokeText(tf.texto, tf.x, tf.y); ctx.fillText(tf.texto, tf.x, tf.y); ctx.globalAlpha = 1.0;
                 }
+
                 if (estadoJuego === "MOSTRAR_DANO") {
-                    let ene = equipoEnemigo[0]; let bx = ene.x + ene.sizeX / 2; let by = ene.y - ene.sizeY - 30; 
+                    let bx = enemyCombate.x + enemyCombate.sizeX / 2; let by = enemyCombate.y - enemyCombate.sizeY - 30; 
                     ctx.textAlign = "center"; ctx.fillStyle = "#ffcc00"; ctx.strokeStyle = "black"; ctx.lineWidth = 4;
                     ctx.font = "bold 26px Courier"; ctx.strokeText("TOTAL: " + danoAcumulado, bx, by); ctx.fillText("TOTAL: " + danoAcumulado, bx, by); ctx.textAlign = "left"; 
                 }
+
                 ctx.restore();
                 
-                // UI DIBUJADA DINÁMICAMENTE
-                equipoPlayer.forEach((p, index) => drawHPCircle(50, 60 + (index * 80), p)); 
-                equipoEnemigo.forEach(e => {
-                    if(combateActivo.tipo === "ESPECIAL") drawUIBossHealth(e);
-                    // Aquí en el futuro puedes poner el dibujo de la barra flotante para los NORMAL
-                });
+                drawPlayerHP(); drawUIBossHealth();
                 
                 if (estadoJuego === "COMBATE_SELECCION") drawUISeleccionManual();
                 else if (estadoJuego === "COMBATE_RESOLUCION" || estadoJuego === "MOSTRAR_DANO") drawTurnTimeline(); 
-                else if (estadoJuego === "FASE_ATAQUE") drawUIFaseAtaqueGesto();
+                else if (estadoJuego.startsWith("ATAQUE_")) drawUIFaseAtaqueGesto();
                 
                 drawImpactosBoss();
-                if (estadoJuego === "FADE_OUT") { let alpha = 1 - (timerFade / 60); ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+                
+                // Superponer el fade negro en toda la pantalla
+                if (estadoJuego === "FADE_OUT") {
+                    let alpha = 1 - (timerFade / 60);
+                    ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
             }
+
             updateHTMLDialog();
         }
 
         function drawCactus(x, y, scale = 1, rot = 0) { 
             ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(scale, scale); 
-            ctx.fillStyle = "#87e376"; ctx.fillRect(-7.5, -40, 15, 40); ctx.fillRect(-22.5, -20, 15, 10); ctx.fillRect(7.5, -30, 15, 10); ctx.restore(); 
+            ctx.fillStyle = "#87e376"; ctx.fillRect(-7.5, -40, 15, 40); 
+            ctx.fillRect(-22.5, -20, 15, 10); ctx.fillRect(7.5, -30, 15, 10); 
+            ctx.restore(); 
         }
 
         function drawObstaculosHitbox() {
@@ -662,34 +768,69 @@
                 if (obs.warning > 0) {
                     let opacity = (Math.floor(tiempoAnimacion * 4) % 2 === 0) ? 0.8 : 0.4;
                     ctx.fillStyle = `rgba(255, 0, 0, ${opacity})`; ctx.strokeStyle = "red"; ctx.lineWidth = 2;
-                    if (obs.tipo === "LLUVIA") { ctx.fillRect(obs.x - 5, obs.targetY - 400, obs.width + 10, 400); ctx.strokeRect(obs.x - 5, obs.targetY - 400, obs.width + 10, 400); } 
-                    else if (obs.tipo === "NOPALAZO") { ctx.fillRect(obs.targetX - 200, obs.y - obs.height/2 - 5, 400, obs.height + 10); ctx.strokeRect(obs.targetX - 200, obs.y - obs.height/2 - 5, 400, obs.height + 10); } 
-                    else if (obs.tipo === "PINCHOS") { ctx.fillRect(obs.x - 5, obs.targetY - 15, obs.width + 10, 15); ctx.strokeRect(obs.x - 5, obs.targetY - 15, obs.width + 10, 15); }
-                } else {
-                    if (obs.tipo === "LLUVIA") drawCactus(obs.x + obs.width/2, obs.y, 0.8, Math.PI);
-                    else if (obs.tipo === "NOPALAZO") drawCactus(obs.x + obs.width/2, obs.y - obs.height/2, 0.8, tiempoAnimacion * 5); 
-                    else if (obs.tipo === "PINCHOS") { ctx.fillStyle = "silver"; for(let i=0; i<3; i++) { ctx.beginPath(); let basex = obs.x + (i*23); let tipy = obs.y - obs.height; ctx.moveTo(basex, obs.y); ctx.lineTo(basex+11, tipy); ctx.lineTo(basex+22, obs.y); ctx.fill(); } }
+
+                    if (obs.tipo === "LLUVIA") {
+                        ctx.fillRect(obs.x - 5, obs.targetY - 400, obs.width + 10, 400); ctx.strokeRect(obs.x - 5, obs.targetY - 400, obs.width + 10, 400); 
+                    } else if (obs.tipo === "NOPALAZO") {
+                        ctx.fillRect(obs.targetX - 200, obs.y - obs.height/2 - 5, 400, obs.height + 10); ctx.strokeRect(obs.targetX - 200, obs.y - obs.height/2 - 5, 400, obs.height + 10);
+                    } else if (obs.tipo === "PINCHOS") {
+                        ctx.fillRect(obs.x - 5, obs.targetY - 15, obs.width + 10, 15); ctx.strokeRect(obs.x - 5, obs.targetY - 15, obs.width + 10, 15);
+                    }
+                } 
+                else {
+                    if (obs.tipo === "LLUVIA") {
+                        drawCactus(obs.x + obs.width/2, obs.y, 0.8, Math.PI);
+                    } else if (obs.tipo === "NOPALAZO") {
+                        drawCactus(obs.x + obs.width/2, obs.y - obs.height/2, 0.8, tiempoAnimacion * 5); 
+                    } else if (obs.tipo === "PINCHOS") {
+                        ctx.fillStyle = "silver";
+                        for(let i=0; i<3; i++) {
+                            ctx.beginPath(); let basex = obs.x + (i*23); let tipy = obs.y - obs.height;
+                            ctx.moveTo(basex, obs.y); ctx.lineTo(basex+11, tipy); ctx.lineTo(basex+22, obs.y); ctx.fill();
+                        }
+                    }
                 }
             });
         }
 
         function updateHTMLDialog() {
-            const dBox = document.getElementById("dialogBox"); const dName = document.getElementById("dialogName"); const dText = document.getElementById("dialogText");
-            if (estadoJuego === "GAME_OVER" || estadoJuego === "MUNDO" || estadoJuego === "CONGELADO" || estadoJuego === "FADE_OUT") { dBox.style.visibility = "hidden"; return; }
-            if (estadoJuego === "COMBATE_INTRO") { dBox.style.visibility = "visible"; dName.innerText = equipoEnemigo[0].nombre; dText.innerText = textoIntro; } 
+            const dBox = document.getElementById("dialogBox");
+            const dName = document.getElementById("dialogName");
+            const dText = document.getElementById("dialogText");
+
+            // QUITÉ EL CÓDIGO DE AUDIO DE AQUÍ PARA QUE NO CORTE LA MÚSICA DE GOLPE
+            if (estadoJuego === "GAME_OVER" || estadoJuego === "MUNDO" || estadoJuego === "CONGELADO" || estadoJuego === "FADE_OUT") {
+                dBox.style.visibility = "hidden";
+                return;
+            }
+
+            if (estadoJuego === "COMBATE_INTRO") {
+                dBox.style.visibility = "visible"; dName.innerText = "C4C-T4C"; dText.innerText = textoIntro;
+            } 
             else if (estadoJuego === "VICTORIA") {
-                dBox.style.visibility = "visible"; dName.innerText = equipoEnemigo[0].nombre; dText.innerText = mensajeTurno; document.getElementById("dialogIcon").style.display = esperandoClic ? "block" : "none";
-                musicaBatalla.pause(); musicaBatalla.currentTime = 0;   
+                dBox.style.visibility = "visible"; dName.innerText = "C4C-T4C"; dText.innerText = mensajeTurno;
+                document.getElementById("dialogIcon").style.display = esperandoClic ? "block" : "none";
+                musicaBatalla.pause();           // AQUÍ SÍ SE QUEDA PORQUE GANASTE
+                musicaBatalla.currentTime = 0;   
             }
             else if (mensajeTurno !== "") {
-                dBox.style.visibility = "visible"; let nick = "SISTEMA";
-                if(ordenTurnos[turnoActualIndex]) { nick = ordenTurnos[turnoActualIndex].obj.nombre; }
-                dName.innerText = nick.toUpperCase(); dText.innerText = mensajeTurno; document.getElementById("dialogIcon").style.display = esperandoClic ? "block" : "none";
-            } else { dBox.style.visibility = "hidden"; }
+                dBox.style.visibility = "visible";
+                let nick = "SISTEMA";
+                if(ordenTurnos[turnoActualIndex]) {
+                    if(ordenTurnos[turnoActualIndex].startsWith("C4C-T4C")) nick = "C4C-T4C";
+                    else nick = ordenTurnos[turnoActualIndex] === "MEPHIS" ? "MEPHIS" : "SARAH";
+                }
+                dName.innerText = nick.toUpperCase(); dText.innerText = mensajeTurno;
+                document.getElementById("dialogIcon").style.display = esperandoClic ? "block" : "none";
+            } 
+            else {
+                dBox.style.visibility = "hidden";
+            }
         }
 
         function drawEscenaCombateCompleta() {
-            let grd = ctx.createLinearGradient(0, 0, 0, pisoCombateY); grd.addColorStop(0, "#e8cca6"); grd.addColorStop(0.8, "#c18c60");
+            let grd = ctx.createLinearGradient(0, 0, 0, pisoCombateY);
+            grd.addColorStop(0, "#e8cca6"); grd.addColorStop(0.8, "#c18c60");
             ctx.fillStyle = grd; ctx.fillRect(-200, -200, canvas.width + 400, pisoCombateY + 200);
             ctx.fillStyle = "#8a5733"; ctx.fillRect(-200, pisoCombateY - 100, canvas.width + 400, 100);
             ctx.fillStyle = "#2e153e"; ctx.fillRect(-200, pisoCombateY, canvas.width + 400, canvas.height - pisoCombateY + 200);
@@ -697,35 +838,43 @@
 
             let respira = Math.sin(tiempoAnimacion) * 3;
             
-            // Dibuja Héroes
-            equipoPlayer.forEach(p => {
-                let px = p.x + (p.shake || 0) + p.offsetX;
-                let altoOriginal = p.estado === "CAIDO" ? p.sizeY / 2 : p.sizeY;
-                let alto = altoOriginal * p.scaleY; 
-                let py = p.y + p.offsetY; 
-                let destello = (p.flash > 0 && Math.floor(p.flash/3)%2 === 0);
-                ctx.fillStyle = destello ? "white" : (p.estado === "CAIDO" ? "#442222" : p.colorSprite); 
-                ctx.fillRect(px, py - alto - (p.estado==="CAIDO"?0:respira), p.sizeX, alto + (p.estado==="CAIDO"?0:respira)); 
-            });
+            let p2x = player2Combate.x + (mephis.shake || 0) + mephis.offsetX;
+            let altoMOriginal = mephis.estado === "CAIDO" ? player2Combate.sizeY / 2 : player2Combate.sizeY;
+            let altoMephis = altoMOriginal * mephis.scaleY; 
+            let p2y = player2Combate.y + mephis.offsetY; 
             
-            // Dibuja Enemigos
-            equipoEnemigo.forEach(e => {
-                let bx = e.x + (e.shake || 0);
-                ctx.fillStyle = (enemigoGolpeado && timerGolpe > 0) ? "white" : e.colorSprite;
-                ctx.fillRect(bx, e.y - e.sizeY - respira, e.sizeX, e.sizeY + respira);
-            });
+            let destelloM = (mephis.flash > 0 && Math.floor(mephis.flash/3)%2 === 0);
+            ctx.fillStyle = destelloM ? "white" : (mephis.estado === "CAIDO" ? "#442222" : player2Combate.color); 
+            ctx.fillRect(p2x, p2y - altoMephis - (mephis.estado==="CAIDO"?0:respira), player2Combate.sizeX, altoMephis + (mephis.estado==="CAIDO"?0:respira)); 
+            
+            let sx = playerCombate.x + (sarah.shake || 0) + sarah.offsetX;
+            let altoSOriginal = sarah.estado === "CAIDO" ? playerCombate.sizeY / 2 : playerCombate.sizeY;
+            let altoSarah = altoSOriginal * sarah.scaleY;
+            let s_y = playerCombate.y + sarah.offsetY;
+
+            let destelloS = (sarah.flash > 0 && Math.floor(sarah.flash/3)%2 === 0);
+            ctx.fillStyle = destelloS ? "white" : (sarah.estado === "CAIDO" ? "#224444" : playerCombate.color); 
+            ctx.fillRect(sx, s_y - altoSarah - (sarah.estado==="CAIDO"?0:respira), playerCombate.sizeX, altoSarah + (sarah.estado==="CAIDO"?0:respira)); 
+            
+            let bx = enemyCombate.x + (enemyCombate.shake || 0);
+            ctx.fillStyle = (enemigoGolpeado && timerGolpe > 0) ? "white" : enemyCombate.color;
+            ctx.fillRect(bx, enemyCombate.y - enemyCombate.sizeY - respira, enemyCombate.sizeX, enemyCombate.sizeY + respira);
             
             if (efectosGolpe.length > 0) {
                 for (let i = 0; i < efectosGolpe.length; i++) {
-                    let ef = efectosGolpe[i]; ctx.beginPath(); ctx.arc(ef.x, ef.y, 5 + (ef.maxLife - ef.life) * 3, 0, Math.PI*2); 
+                    let ef = efectosGolpe[i];
+                    ctx.beginPath(); ctx.arc(ef.x, ef.y, 5 + (ef.maxLife - ef.life) * 3, 0, Math.PI*2); 
                     ctx.fillStyle = `rgba(255, 255, 100, ${ef.life / ef.maxLife})`; ctx.fill();
                 }
             }
         }
 
+        function drawPlayerHP() { drawHPCircle(50, 60, mephis); drawHPCircle(50, 140, sarah); }
         function drawHPCircle(cx, cy, char) {
             ctx.beginPath(); ctx.arc(cx, cy, 30, 0, Math.PI*2); ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = "#333"; ctx.stroke();
-            if (char.hp > 0) { ctx.beginPath(); ctx.arc(cx, cy, 30, -Math.PI/2, -Math.PI/2 + (Math.PI*2 * (char.hp / char.hpMax))); ctx.strokeStyle = char.colorUI; ctx.stroke(); }
+            if (char.hp > 0) {
+                ctx.beginPath(); ctx.arc(cx, cy, 30, -Math.PI/2, -Math.PI/2 + (Math.PI*2 * (char.hp / char.maxHp))); ctx.strokeStyle = char.color; ctx.stroke();
+            }
             ctx.fillStyle = "white"; ctx.font = "bold 12px Courier"; ctx.fillText(char.nombre.substring(0,3).toUpperCase(), cx - 12, cy - 5);
             ctx.font = "10px Courier"; ctx.fillText(char.estado === "CAIDO" ? "UFF" : `${char.hp}`, cx - 12, cy + 12);
             if (char.estado === "CAIDO") {
@@ -733,27 +882,36 @@
             }
         }
 
-        function drawUIBossHealth(enemigoBoss) {
-            let barrasRestantes = Math.ceil(enemigoBoss.hp / 1000); let hpEnBarraActual = enemigoBoss.hp % 1000; if (hpEnBarraActual === 0 && enemigoBoss.hp > 0) hpEnBarraActual = 1000;
+        function drawUIBossHealth() {
+            let barrasRestantes = Math.ceil(boss.hp / 1000); let hpEnBarraActual = boss.hp % 1000; if (hpEnBarraActual === 0 && boss.hp > 0) hpEnBarraActual = 1000;
             let p = hpEnBarraActual / 1000; let colores = ["#00ffff", "#00ff00", "#ffff00", "#ff8800", "#ff0000"]; let colorAct = colores[Math.max(0, barrasRestantes - 1)];
             ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(canvas.width - 420, 10, 400, 35);
             ctx.fillStyle = colorAct; ctx.fillRect(canvas.width - 415, 15, 390 * p, 15);
-            ctx.fillStyle = "white"; ctx.font = "bold 14px Courier"; ctx.fillText(`${enemigoBoss.nombre} [x${barrasRestantes}] HP: ${enemigoBoss.hp}/${enemigoBoss.hpMax}`, canvas.width - 410, 42);
+            ctx.fillStyle = "white"; ctx.font = "bold 14px Courier"; ctx.fillText(`C4C-T4C [x${barrasRestantes}] HP: ${boss.hp}/5000`, canvas.width - 410, 42);
         }
 
         function drawUISeleccionManual() {
             ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(0,0,canvas.width,canvas.height);
             if (heroesPendientes.length > 0) {
-                let actual = heroesPendientes[0];
-                ctx.fillStyle = "white"; ctx.font = "bold 24px Courier"; ctx.fillText(`¿Qué hará ${actual.nombre}?`, canvas.width/2 - 120, canvas.height/2 - 60);
+                let seleccionandoPara = heroesPendientes[0] === "MEPHIS" ? "Mephis" : "Sarah";
+                ctx.fillStyle = "white"; ctx.font = "bold 24px Courier"; ctx.fillText(`¿Qué hará ${seleccionandoPara}?`, canvas.width/2 - 120, canvas.height/2 - 60);
                 ctx.fillStyle = "rgba(0, 50, 150, 0.8)"; ctx.fillRect(50, canvas.height - 150, 250, 120); ctx.fillStyle = "rgba(150, 0, 0, 0.8)"; ctx.fillRect(canvas.width - 300, canvas.height - 150, 250, 120); 
                 ctx.fillStyle = "white"; ctx.font = "bold 30px Courier"; ctx.fillText("ESCUDO", 110, canvas.height - 85); ctx.fillText("ATAQUE", canvas.width - 240, canvas.height - 85);
+            }
+            drawTurnTimeline(); 
+            if (bossAccionesPendientes > 0) {
+                let pctTiempo = timerBoss / (bossAccionesPendientes === 2 ? MAX_TIMER_BOSS_FAST : MAX_TIMER_BOSS_NORMAL);
+                let longMarco = 250 * pctTiempo; 
+                ctx.strokeStyle = "#ffff00"; ctx.lineWidth = 4;
+                ctx.beginPath(); ctx.moveTo(canvas.width - 300 + 125 - longMarco/2, canvas.height - 155); ctx.lineTo(canvas.width - 300 + 125 + longMarco/2, canvas.height - 155); ctx.stroke();
+                ctx.beginPath(); ctx.arc(canvas.width - 175, canvas.height - 175, 20, 0, Math.PI*2); ctx.fillStyle = "red"; ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "black"; ctx.font = "12px Courier"; ctx.fillText(">:)", canvas.width - 186, canvas.height - 171);
             }
         }
 
         function drawUIFaseAtaqueGesto() {
             drawTurnTimeline();
-            let framesTotalesAtaque = 60 * 5; let txt = combateActivo.heroeEnTurno.tipoAtaque === "CORTE" ? "¡CORTA!" : "¡GOLPEA!";
+            let framesTotalesAtaque = 60 * 5; let txt = estadoJuego === "ATAQUE_MEPHIS" ? "¡CORTA!" : "¡GOLPEA!";
             if (timerAtaqueFase > framesTotalesAtaque - 45) {
                 ctx.textAlign = "center"; ctx.font = "bold 60px Courier"; ctx.fillStyle = "white"; ctx.strokeStyle = "black"; ctx.lineWidth = 6;
                 ctx.strokeText(txt, canvas.width/2, canvas.height/2); ctx.fillText(txt, canvas.width/2, canvas.height/2); ctx.textAlign = "left"; 
@@ -771,23 +929,27 @@
                 let cx = canvas.width/2 - 40 + (i * 35); let cy = 80;
                 ctx.beginPath(); ctx.arc(cx, cy, 10, 0, Math.PI*2);
                 if (i < ordenTurnos.length) {
-                    let turnoActual = ordenTurnos[i];
-                    ctx.fillStyle = turnoActual.obj.colorUI || turnoActual.obj.colorSprite; ctx.fill();
-                    if (turnoActual.obj.estado === "CAIDO") {
+                    let id = ordenTurnos[i]; ctx.fillStyle = coloresID[id]; ctx.fill();
+                    let char = id === "MEPHIS" ? mephis : (id === "SARAH" ? sarah : null);
+                    if (char && char.estado === "CAIDO") {
                         ctx.strokeStyle = "rgba(255,0,0,0.8)"; ctx.lineWidth = 3;
-                        ctx.beginPath(); ctx.moveTo(cx-7, cy-7); ctx.lineTo(cx+7, cy+7); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx+7, cy-7); ctx.lineTo(cx-7, cy+7); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(cx-7, cy-7); ctx.lineTo(cx+7, cy+7); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(cx+7, cy-7); ctx.lineTo(cx-7, cy+7); ctx.stroke();
                     }
                 } else { ctx.fillStyle = "rgba(255,255,255,0.2)"; ctx.fill(); }
-                ctx.strokeStyle = (i === turnoActualIndex && estadoJuego === "COMBATE_RESOLUCION") ? "yellow" : "white"; ctx.lineWidth = 2; ctx.stroke();
+                ctx.strokeStyle = (i === turnoActualIndex && estadoJuego === "COMBATE_RESOLUCION") ? "yellow" : "white";
+                ctx.lineWidth = 2; ctx.stroke();
             }
         }
 
         function drawImpactosBoss() {
             for (let imp of impactosBoss) {
                 ctx.save(); ctx.translate(imp.x, imp.y); ctx.rotate(imp.rotacion);
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.9)"; ctx.lineWidth = 1; ctx.beginPath();
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.9)"; ctx.lineWidth = 1;
+                ctx.beginPath();
                 for(let j=0; j<5; j++) {
-                    let ang = (Math.PI*2 / 5) * j; ctx.moveTo(0, 0); ctx.lineTo(Math.cos(ang) * 16, Math.sin(ang) * 16); ctx.moveTo(Math.cos(ang) * 8, Math.sin(ang) * 8); ctx.lineTo(Math.cos(ang+0.5) * 14, Math.sin(ang+0.5) * 14);
+                    let ang = (Math.PI*2 / 5) * j; ctx.moveTo(0, 0); ctx.lineTo(Math.cos(ang) * 16, Math.sin(ang) * 16);
+                    ctx.moveTo(Math.cos(ang) * 8, Math.sin(ang) * 8); ctx.lineTo(Math.cos(ang+0.5) * 14, Math.sin(ang+0.5) * 14);
                 }
                 ctx.stroke(); ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI*2); ctx.fillStyle = "black"; ctx.fill(); ctx.restore();
                 if (imp.frameTexto > 0) { ctx.fillStyle = "yellow"; ctx.font = "bold 22px Courier"; ctx.fillText("¡TAAS!", imp.x - 30, imp.y - 20 - (30 - imp.frameTexto)); }
