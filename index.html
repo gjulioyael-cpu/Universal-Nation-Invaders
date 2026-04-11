@@ -160,7 +160,7 @@
         </div>
         <div class="dr"><label>Fondo</label><select id="dp-fondo"><option value="GENERICO">GENERICO</option><option value="DESIERTO">DESIERTO</option><option value="BOSQUE">BOSQUE</option></select></div>
         <div class="dr"><label>Tipo Combate</label><select id="dp-tipo-combate"><option value="NORMAL">NORMAL</option><option value="BOSS">BOSS</option></select></div>
-        <div class="dr"><label>Mecánica Especial</label><select id="dp-mecanica"><option value="">Ninguna</option><option value="LADRON_TURNO">LADRON_TURNO</option></select></div>
+        <div class="dr"><label>Habilidad Pasiva</label><select id="dp-habilidad"><option value="">Ninguna</option><option value="EL_MAS_RAPIDO_DEL_OESTE">El Más Rápido del Oeste</option><option value="LADRON_TURNO">Robo de Turno (legacy)</option></select></div>
         <div class="dr"><label>Acciones por ronda</label><input type="number" id="dp-acciones" value="1"></div>
     
 
@@ -192,7 +192,7 @@ function probarEnemigoPersonalizado() {
         musica: document.getElementById("dp-musica").value.trim() || "rodeo-de-c4c.mp3", 
         fondo: document.getElementById("dp-fondo").value,
         
-        mecanica_especial: document.getElementById("dp-mecanica").value||null,
+        habilidad_pasiva: document.getElementById("dp-habilidad").value||null,
         ataques: ["LLUVIA", "PINCHOS"], // <-- CAMBIA ESTO PARA QUE YA NO DIGA 'ataques: ataques,'
        
         
@@ -272,7 +272,7 @@ function probarEnemigoPersonalizado() {
             tamano: { x: parseInt(document.getElementById("dp-sx").value) || 40, y: parseInt(document.getElementById("dp-sy").value) || 80 }, 
             musica: document.getElementById("dp-musica").value.trim() || "rodeo-de-c4c.mp3", 
             fondo: document.getElementById("dp-fondo").value,
-            mecanica_especial: document.getElementById("dp-mecanica").value || null, 
+            habilidad_pasiva: document.getElementById("dp-habilidad").value || null, 
             ataques: ["LLUVIA", "PINCHOS"], 
             tipoCombate: document.getElementById("dp-tipo-combate").value,
             acciones_por_ronda: parseInt(document.getElementById("dp-acciones").value) || 1,

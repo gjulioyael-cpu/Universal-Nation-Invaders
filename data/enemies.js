@@ -12,7 +12,7 @@ const CATALOGO_ENEMIGOS = {
         fondo: "DESIERTO",
         tipoCombate: "BOSS", 
         velocidadReserva: 2.5, 
-        mecanica_especial: "LADRON_TURNO",
+        habilidad_pasiva: "EL_MAS_RAPIDO_DEL_OESTE",
         ataques: ["LLUVIA", "NOPALAZO", "PINCHOS"], 
         texto_intro: "¡SOY EL MAS VELOZ, MUERAN!",
         texto_victoria: "Ugh, ¿en serio?", 

@@ -16,14 +16,24 @@ const TIPOS_DE_COMBATE = {
 };
 
 const HABILIDADES_PASIVAS = {
+    "EL_MAS_RAPIDO_DEL_OESTE": {
+        nombre: "El Más Rápido del Oeste",
+        tipo: "ROBO_TURNO_BALAZO",
+        sfx: "balazo.mp3",
+        volumen: 0.2,
+        velocidad_robo: 0.1
+    },
+    // Alias para compatibilidad (puedes cambiar esto a lo que quieras)
     "LADRON_TURNO": {
         nombre: "Robo de Turno y Disparo",
         tipo: "ROBO_TURNO_BALAZO",
         sfx: "balazo.mp3",
-        volumen: 0.2
+        volumen: 0.2,
+        velocidad_robo: 0.1
     }
-    // Aquí el día de mañana podrías poner:
-    // "VENENO": { tipo: "DANO_POR_TURNO", dano: 50 }
+    // Aquí el día de mañana podrías poner más habilidades:
+    // "ESCUDO_MAGICO": { tipo: "REDUCIR_DANO", reduccion: 0.5 }
+    // "REGENERACION": { tipo: "DANO_INVERSO", dano: 10 }
 };
 
 const ESTADOS_ALTERADOS = {
@@ -33,7 +43,8 @@ const ESTADOS_ALTERADOS = {
         dmg: 5,
         turnos: 3,
         primer_mensaje: (nombre) => `${nombre} ha sido envenenado!`,
-        mensaje_por_turno: (nombre, dmg) => `${nombre} sufre ${dmg} de daño por el veneno.`
+        mensaje_por_turno: (nombre, dmg) => `${nombre} sufre ${dmg} de daño por el veneno.`,
+        icono: "img/ico-veneno.jpg"
     },
 
     "CONTUSION": {
@@ -41,6 +52,15 @@ const ESTADOS_ALTERADOS = {
   
         turnos: [2, 4], // La contusión dura entre 2 y 4 turnos
         primer_mensaje: (nombre) => `${nombre} ha sido contusionado!`,
-        mensaje_por_turno: (nombre) => `${nombre} no se puede mover por la contusión.`
+        mensaje_por_turno: (nombre) => `${nombre} no se puede mover por la contusión.`,
+        icono: "img/ico-contusion.png"
+    },
+
+    "DORMIDO": {
+        tipo: "ATURDIDO",
+        turnos: 2, // El personaje dormido no puede actuar durante 2 turnos
+        primer_mensaje: (nombre) => `${nombre} se ha quedado dormido!`,
+        mensaje_por_turno: (nombre) => `${nombre} no puede actuar porque está dormido.`,
+        icono: "img/ico-dormido.png"
     }
 }

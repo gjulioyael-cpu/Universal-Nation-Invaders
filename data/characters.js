@@ -4,7 +4,7 @@ const DATOS_HEROES = {
         hp: 600, 
         maxHp: 600, 
         color: "#5b3846", 
-        tipo_ataque: "TRAZO",
+        ataque_asignado: "CORTE", // Asignamos un ataque específico a Mephis
         estado: "NINGUNO" // Aquí podrías agregar un estado alterado como "VENENO" o "CONTUSION"
     },
     "SARAH":  { 
@@ -12,7 +12,7 @@ const DATOS_HEROES = {
         hp: 1000, 
         maxHp: 1000, 
         color: "#a3325b", 
-        tipo_ataque: "TAP" ,
+        ataque_asignado: "PUNETAZO", // Asignamos un ataque específico a Sarah
         estado: "NINGUNO" // Aquí podrías agregar un estado alterado como "VENENO" o "CONTUSION"
     },
     
