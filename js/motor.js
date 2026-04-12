@@ -46,7 +46,7 @@ for (let key in DATOS_HEROES) { coloresID[key] = DATOS_HEROES[key].color; }
 
 // Audio
 const musicaBatalla = new Audio(); musicaBatalla.loop = true; musicaBatalla.volume = 1.0;
-const sfxBalazo     = new Audio("balazo.mp3"); sfxBalazo.volume = 0.8;
+const sfxBalazo     = new Audio("ost/balazo.mp3"); sfxBalazo.volume = 0.8;
 
 // Pantalla y mandos
 const canvas  = document.getElementById("gameCanvas");
